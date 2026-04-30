@@ -499,7 +499,7 @@
   }
   function fmtNum(val) {
     const n = parseFloat(val);
-    return isNaN(n) ? '—' : n.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    return isNaN(n) ? '—' : n.toLocaleString('es-PA', {minimumFractionDigits: 0, maximumFractionDigits: 0});
   }
   function fmtFecha(str) {
     if (!str || str === '—') return '—';
@@ -549,7 +549,7 @@
   set('bruto',        isNaN(brutoVal) ? '—' : fmtNum(brutoVal));
   set('tara',         isNaN(taraVal)  ? '—' : fmtNum(taraVal));
   set('neto',         isNaN(netoVal)  ? '—' : fmtNum(netoVal));
-  set('tons-cortas',  isNaN(tonsVal)  ? '—' : tonsVal.toLocaleString('es-PA', {minimumFractionDigits: 4, maximumFractionDigits: 4}));
+  set('tons-cortas',  isNaN(tonsVal)  ? '—' : tonsVal.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits: 2}));
 
   // Firmas
   set('firma-entrega', get('entregado_por'));
