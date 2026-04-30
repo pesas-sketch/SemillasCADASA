@@ -366,6 +366,10 @@
           <div class="campo-label">Subdivisión</div>
           <div class="campo-valor" id="subdiv">—</div>
         </div>
+         <div class="campo">
+          <div class="campo-label">Variedad</div>
+          <div class="campo-valor" id="variedad">—</div>
+        </div>
         <div class="campo">
           <div class="campo-label">Tipo de Equipo</div>
           <div class="campo-valor" id="tipo-equipo">—</div>
@@ -526,6 +530,7 @@
   set('proveedor',    prov);
   set('pie-proveedor', prov);
   set('subdiv',       get('Subdiv'));
+  set('variedad',       get('variedad'));
   set('tipo-equipo',  get('TipoEquipo'));
   set('transportista',get('TRANSPORTISTA'));
   set('contrato',     get('Contrato'));
@@ -555,17 +560,7 @@
   set('firma-entrega', get('entregado_por'));
   set('firma-recibe',  get('recibido_por'));
 
-  // QR — codifica el nombre del proveedor
-  new QRCode(document.getElementById('qrcode'), {
-    text: prov !== '—' ? prov : ('Recibo #' + semillasId),
-    width: 72,
-    height: 72,
-    colorDark: '#1a3a1f',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
-
-  // Autoprint
+   // Autoprint
   if (p.get('autoprint') === '1') {
     window.addEventListener('load', () => setTimeout(() => window.print(), 700));
   }
