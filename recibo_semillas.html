@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recibo de Pesado – Semillas</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --verde-oscuro:  #1a3a1f;
+      --verde-medio:   #2d6a35;
+      --verde-claro:   #4a9455;
+      --verde-menta:   #d4edda;
+      --verde-pale:    #eef6ef;
+      --tierra:        #8b6914;
+      --tierra-pale:   #fdf6e3;
+      --negro:         #111;
+      --gris-oscuro:   #3a3a3a;
+      --gris-medio:    #6b6b6b;
+      --gris-linea:    #d0d8d1;
+      --blanco:        #fff;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #c8d8c8;
+      background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,255,255,0.04) 10px,
+        rgba(255,255,255,0.04) 20px
+      );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px 60px;
+      min-height: 100vh;
+    }
+
+    .recibo {
+      background: var(--blanco);
+      width: 210mm;
+      padding: 0;
+      box-shadow: 0 8px 40px rgba(26,58,31,0.25);
+      overflow: hidden;
+      border: 1px solid var(--verde-claro);
+    }
+
+    /* ── BANDA SUPERIOR ── */
+    .banda-top {
+      background: var(--verde-oscuro);
+      padding: 14px 18px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      position: relative;
+    }
+    .banda-top::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--verde-claro), var(--tierra), var(--verde-claro));
+    }
+    .empresa-bloque {}
+    .empresa-dep {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 2px;
+    }
+    .empresa-nombre {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--blanco);
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .recibo-id-bloque {
+      text-align: right;
+    }
+    .recibo-tipo {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 2px;
+    }
+    .recibo-numero {
+      font-family: 'DM Mono', monospace;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--blanco);
+      letter-spacing: 1px;
+    }
+
+    /* ── FECHAS ── */
+    .fechas-banda {
+      background: var(--verde-pale);
+      border-bottom: 1.5px solid var(--gris-linea);
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      align-items: center;
+    }
+    .fecha-item {
+      padding: 9px 18px;
+    }
+    .fecha-sep {
+      background: var(--gris-linea);
+      height: 60%;
+      align-self: center;
+    }
+    .fecha-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--verde-medio);
+      margin-bottom: 2px;
+    }
+    .fecha-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--negro);
+    }
+
+    /* ── CUERPO ── */
+    .cuerpo {
+      padding: 14px 18px 16px;
+    }
+
+    /* ── SECCIÓN GENÉRICA ── */
+    .seccion {
+      margin-bottom: 12px;
+    }
+    .seccion-titulo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    .seccion-titulo span {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--verde-medio);
+      white-space: nowrap;
+    }
+    .seccion-titulo::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: linear-gradient(90deg, var(--verde-claro) 0%, transparent 100%);
+    }
+
+    .campos-grid {
+      display: grid;
+      gap: 5px 16px;
+    }
+    .campos-grid.col-2 { grid-template-columns: 1fr 1fr; }
+    .campos-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .campos-grid.col-5 { grid-template-columns: repeat(5, 1fr); }
+
+    .campo {
+      background: var(--verde-pale);
+      border: 1px solid var(--gris-linea);
+      border-left: 3px solid var(--verde-claro);
+      padding: 5px 8px;
+    }
+    .campo-label {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gris-medio);
+      margin-bottom: 1px;
+    }
+    .campo-valor {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--negro);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── SECCIÓN PESOS ── */
+    .pesos-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .peso-card {
+      border: 1.5px solid var(--gris-linea);
+      padding: 8px 10px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .peso-card.neto {
+      border-color: var(--verde-medio);
+      background: var(--verde-pale);
+    }
+    .peso-card.tons {
+      border-color: var(--tierra);
+      background: var(--tierra-pale);
+    }
+    .peso-label {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gris-medio);
+      margin-bottom: 3px;
+    }
+    .peso-card.neto .peso-label { color: var(--verde-medio); }
+    .peso-card.tons .peso-label { color: var(--tierra); }
+    .peso-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--negro);
+      line-height: 1;
+    }
+    .peso-card.neto .peso-val { color: var(--verde-oscuro); font-size: 20px; }
+    .peso-card.tons .peso-val { color: var(--tierra); font-size: 20px; }
+    .peso-unit {
+      font-size: 9px;
+      color: var(--gris-medio);
+      margin-top: 1px;
+    }
+
+    /* ── FIRMAS ── */
+    .firmas {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 4px;
+    }
+    .firma-bloque { text-align: center; }
+    .firma-espacio {
+      height: 38px;
+      border-bottom: 1.5px solid var(--negro);
+      margin-bottom: 4px;
+    }
+    .firma-etiqueta {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gris-medio);
+    }
+    .firma-nombre {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--negro);
+      margin-top: 2px;
+    }
+
+    /* ── PIE / QR ── */
+    .pie {
+      background: var(--verde-oscuro);
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-top: 0;
+    }
+    .pie-texto {
+      font-size: 8.5px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.5px;
+    }
+    .pie-texto strong {
+      color: rgba(255,255,255,0.8);
+      display: block;
+      margin-bottom: 2px;
+      font-size: 9px;
+    }
+    #qrcode {
+      background: white;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    #qrcode canvas, #qrcode img { display: block; }
+
+    /* ── BOTÓN IMPRIMIR ── */
+    .btn-imprimir {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--verde-oscuro);
+      color: white;
+      border: none;
+      padding: 12px 22px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(26,58,31,0.5);
+    }
+    .btn-imprimir:hover { background: var(--verde-medio); }
+
+    @media print {
+      body { background: none; padding: 0; }
+      .recibo { box-shadow: none; width: 100%; border: none; }
+      .btn-imprimir { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="recibo">
+
+  <!-- BANDA TOP -->
+  <div class="banda-top">
+    <div class="empresa-bloque">
+      <div class="empresa-dep">Departamento de Pesas</div>
+      <div class="empresa-nombre">SEMILLAS</div>
+    </div>
+    <div class="recibo-id-bloque">
+      <div class="recibo-tipo">Recibo N°</div>
+      <div class="recibo-numero" id="recibo-id">—</div>
+    </div>
+  </div>
+
+  <!-- FECHAS -->
+  <div class="fechas-banda">
+    <div class="fecha-item">
+      <div class="fecha-label">Fecha de Corte</div>
+      <div class="fecha-val" id="fecha-corte">—</div>
+    </div>
+    <div class="fecha-sep"></div>
+    <div class="fecha-item">
+      <div class="fecha-label">Fecha de Pesado</div>
+      <div class="fecha-val" id="fecha-pesado">—</div>
+    </div>
+  </div>
+
+  <!-- CUERPO -->
+  <div class="cuerpo">
+
+    <!-- DATOS DEL PROVEEDOR -->
+    <div class="seccion">
+      <div class="seccion-titulo"><span>Datos del Proveedor</span></div>
+      <div class="campos-grid col-3" style="margin-bottom:5px">
+        <div class="campo">
+          <div class="campo-label">Proveedor</div>
+          <div class="campo-valor" id="proveedor">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">Subdivisión</div>
+          <div class="campo-valor" id="subdiv">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">Tipo de Equipo</div>
+          <div class="campo-valor" id="tipo-equipo">—</div>
+        </div>
+      </div>
+      <div class="campos-grid col-2">
+        <div class="campo">
+          <div class="campo-label">Transportista</div>
+          <div class="campo-valor" id="transportista">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">Contrato</div>
+          <div class="campo-valor" id="contrato">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATOS DE CORTE -->
+    <div class="seccion">
+      <div class="seccion-titulo"><span>Datos de Corte</span></div>
+      <div class="campos-grid col-2" style="margin-bottom:5px">
+        <div class="campo">
+          <div class="campo-label">Tractor 1</div>
+          <div class="campo-valor" id="tractor1">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">Tractor 2</div>
+          <div class="campo-valor" id="tractor2">—</div>
+        </div>
+      </div>
+      <div class="campos-grid col-2" style="margin-bottom:5px">
+        <div class="campo">
+          <div class="campo-label">N° Económico Tractor 1</div>
+          <div class="campo-valor" id="ne-tractor1">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">N° Económico Tractor 2</div>
+          <div class="campo-valor" id="ne-tractor2">—</div>
+        </div>
+      </div>
+      <div class="campos-grid col-2" style="margin-bottom:5px">
+        <div class="campo">
+          <div class="campo-label">Chasis 1</div>
+          <div class="campo-valor" id="chasis1">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">Chasis 2</div>
+          <div class="campo-valor" id="chasis2">—</div>
+        </div>
+      </div>
+      <div class="campos-grid col-2">
+        <div class="campo">
+          <div class="campo-label">Caja 1</div>
+          <div class="campo-valor" id="caja1">—</div>
+        </div>
+        <div class="campo">
+          <div class="campo-label">Caja 2</div>
+          <div class="campo-valor" id="caja2">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALLES DE PESO -->
+    <div class="seccion">
+      <div class="seccion-titulo"><span>Detalles de Peso</span></div>
+      <div class="pesos-grid">
+        <div class="peso-card">
+          <div class="peso-label">Bruto</div>
+          <div class="peso-val" id="bruto">—</div>
+          <div class="peso-unit">kg</div>
+        </div>
+        <div class="peso-card">
+          <div class="peso-label">Tara</div>
+          <div class="peso-val" id="tara">—</div>
+          <div class="peso-unit">kg</div>
+        </div>
+        <div class="peso-card neto">
+          <div class="peso-label">Neto</div>
+          <div class="peso-val" id="neto">—</div>
+          <div class="peso-unit">kg</div>
+        </div>
+        <div class="peso-card tons">
+          <div class="peso-label">Tons. Cortas</div>
+          <div class="peso-val" id="tons-cortas">—</div>
+          <div class="peso-unit">ton</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIRMAS -->
+    <div class="seccion" style="margin-bottom:0">
+      <div class="seccion-titulo"><span>Firmas</span></div>
+      <div class="firmas">
+        <div class="firma-bloque">
+          <div class="firma-espacio"></div>
+          <div class="firma-etiqueta">Entregado por</div>
+          <div class="firma-nombre" id="firma-entrega">—</div>
+        </div>
+        <div class="firma-bloque">
+          <div class="firma-espacio"></div>
+          <div class="firma-etiqueta">Recibido por</div>
+          <div class="firma-nombre" id="firma-recibe">—</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cuerpo -->
+
+  <!-- PIE + QR -->
+  <div class="pie">
+    <div class="pie-texto">
+      <strong>SEMILLAS — Departamento de Pesas</strong>
+      Documento generado desde AppSheet.<br>
+      Recibo N° <span id="pie-id">—</span> · Proveedor: <span id="pie-proveedor">—</span>
+    </div>
+    <div id="qrcode"></div>
+  </div>
+
+</div><!-- /recibo -->
+
+<button class="btn-imprimir" onclick="window.print()">🖨 Imprimir</button>
+
+<script>
+  const p   = new URLSearchParams(window.location.search);
+  const get = (k, def = '—') => p.get(k) ? decodeURIComponent(p.get(k)) : def;
+
+  // Helpers
+  function set(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  function fmtNum(val) {
+    const n = parseFloat(val);
+    return isNaN(n) ? '—' : n.toLocaleString('es-PA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+  function fmtFecha(str) {
+    if (!str || str === '—') return '—';
+    // Acepta ISO o dd/mm/yyyy o yyyy-mm-dd HH:MM
+    const d = new Date(str.replace(/-/g, '/'));
+    if (isNaN(d)) return str;
+    return d.toLocaleString('es-PA', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  // Encabezado
+  const semillasId = get('SemillasId');
+  set('recibo-id',    semillasId);
+  set('pie-id',       semillasId);
+
+  // Fechas
+  set('fecha-corte',  fmtFecha(get('FechaCorte')));
+  set('fecha-pesado', fmtFecha(get('FechaPesado')));
+
+  // Proveedor
+  const prov = get('PROVEEDOR');
+  set('proveedor',    prov);
+  set('pie-proveedor', prov);
+  set('subdiv',       get('Subdiv'));
+  set('tipo-equipo',  get('TipoEquipo'));
+  set('transportista',get('TRANSPORTISTA'));
+  set('contrato',     get('Contrato'));
+
+  // Corte
+  set('tractor1',     get('tractor1'));
+  set('tractor2',     get('tractor2'));
+  set('ne-tractor1',  get('NE_tractor1'));
+  set('ne-tractor2',  get('NE_tractor2'));
+  set('chasis1',      get('chasis1'));
+  set('chasis2',      get('chasis2'));
+  set('caja1',        get('caja1'));
+  set('caja2',        get('caja2'));
+
+  // Pesos
+  const brutoVal = parseFloat(get('Bruto', '0'));
+  const taraVal  = parseFloat(get('tara',  '0'));
+  const netoVal  = parseFloat(get('neto',  '0'));
+  const tonsVal  = netoVal * 0.001102311;
+
+  set('bruto',        isNaN(brutoVal) ? '—' : fmtNum(brutoVal));
+  set('tara',         isNaN(taraVal)  ? '—' : fmtNum(taraVal));
+  set('neto',         isNaN(netoVal)  ? '—' : fmtNum(netoVal));
+  set('tons-cortas',  isNaN(tonsVal)  ? '—' : tonsVal.toLocaleString('es-PA', {minimumFractionDigits: 4, maximumFractionDigits: 4}));
+
+  // Firmas
+  set('firma-entrega', get('entregado_por'));
+  set('firma-recibe',  get('recibido_por'));
+
+  // QR — codifica el nombre del proveedor
+  new QRCode(document.getElementById('qrcode'), {
+    text: prov !== '—' ? prov : ('Recibo #' + semillasId),
+    width: 72,
+    height: 72,
+    colorDark: '#1a3a1f',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  // Autoprint
+  if (p.get('autoprint') === '1') {
+    window.addEventListener('load', () => setTimeout(() => window.print(), 700));
+  }
+</script>
+</body>
+</html>
