@@ -173,6 +173,7 @@
     .campos-grid.col-2 { grid-template-columns: 1fr 1fr; }
     .campos-grid.col-3 { grid-template-columns: 1fr 1fr 1fr; }
     .campos-grid.col-5 { grid-template-columns: repeat(5, 1fr); }
+    .campos-grid.col-4 { grid-template-columns: repeat(4, 1fr); }
 
     .campo {
       background: var(--verde-pale);
@@ -391,7 +392,7 @@
     <!-- DATOS DE CORTE -->
     <div class="seccion">
       <div class="seccion-titulo"><span>Datos de Corte</span></div>
-      <div class="campos-grid col-2" style="margin-bottom:5px">
+      <div class="campos-grid col-4" style="margin-bottom:5px">
         <div class="campo">
           <div class="campo-label">Tractor 1</div>
           <div class="campo-valor" id="tractor1">—</div>
@@ -400,18 +401,16 @@
           <div class="campo-label">Tractor 2</div>
           <div class="campo-valor" id="tractor2">—</div>
         </div>
-      </div>
-      <div class="campos-grid col-2" style="margin-bottom:5px">
         <div class="campo">
-          <div class="campo-label">N° Económico Tractor 1</div>
+          <div class="campo-label">N° Empleado Tractor 1</div>
           <div class="campo-valor" id="ne-tractor1">—</div>
         </div>
         <div class="campo">
-          <div class="campo-label">N° Económico Tractor 2</div>
+          <div class="campo-label">N° Empleado Tractor 2</div>
           <div class="campo-valor" id="ne-tractor2">—</div>
         </div>
       </div>
-      <div class="campos-grid col-2" style="margin-bottom:5px">
+      <div class="campos-grid col-4" style="margin-bottom:5px">
         <div class="campo">
           <div class="campo-label">Chasis 1</div>
           <div class="campo-valor" id="chasis1">—</div>
@@ -420,8 +419,6 @@
           <div class="campo-label">Chasis 2</div>
           <div class="campo-valor" id="chasis2">—</div>
         </div>
-      </div>
-      <div class="campos-grid col-2">
         <div class="campo">
           <div class="campo-label">Caja 1</div>
           <div class="campo-valor" id="caja1">—</div>
